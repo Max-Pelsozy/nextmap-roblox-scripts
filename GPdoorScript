@@ -1,0 +1,59 @@
+local MS = game:GetService("MarketplaceService")
+local Gamepass = 1267869204 --replace with real id 
+local OpenTime = 1
+local OpenTrans = 0.5
+local CloseTrans = 0
+local BuyGUI = true
+local KillOnTouch = true
+local Whitelist = {
+	1 -- ROBLOX UserId
+}
+
+local Door = script.Parent
+local debounce = false
+
+function CheckWhitelist(userId)
+	for _, id in ipairs(Whitelist) do
+		if userId == id then
+			return true
+		end
+	end
+	return false
+end
+
+Door.Touched:Connect(function(hit)
+	if debounce then return end
+	local plr = game.Players:GetPlayerFromCharacter(hit.Parent)
+	if not plr then return end
+	if Gamepass <= 0 then return end
+
+	debounce = true
+
+	local success, ownsPass = pcall(function()
+		return MS:UserOwnsGamePassAsync(plr.UserId, Gamepass)
+	end)
+
+	if success and (ownsPass or CheckWhitelist(plr.UserId)) then
+		Door.CanCollide = false
+		Door.Transparency = OpenTrans
+		wait(OpenTime)
+		Door.CanCollide = true
+		Door.Transparency = CloseTrans
+	else
+		Door.CanCollide = true
+		Door.Transparency = CloseTrans
+
+		if BuyGUI then
+			MS:PromptGamePassPurchase(plr, Gamepass)
+		end
+
+		if KillOnTouch then
+			local humanoid = plr.Character and plr.Character:FindFirstChild("Humanoid")
+			if humanoid then
+				humanoid.Health = 0
+			end
+		end
+	end
+
+	debounce = false
+end)
