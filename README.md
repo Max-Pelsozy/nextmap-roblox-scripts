@@ -1,2 +1,1 @@
-# nextmap-roblox-scripts
-Starter Roblox scripts made by Max (Nextmap Tech)
+This is the Roblox script repository all are frre these include gamepass door scripts, UI scripts and alot more. thank you for using my scriptS!!!
